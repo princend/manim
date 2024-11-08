@@ -1,0 +1,6 @@
+\.venv
+\.venv\*
+\media
+\media\*
+\__pycache__
+\__pycache__\*
