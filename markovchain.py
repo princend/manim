@@ -12,7 +12,7 @@ class MarkovChainOptimized(Scene):
         states = {
             "飯": LEFT * 4+UP*2,
             "麵": RIGHT * 4+UP*2,
-            "漢堡": DOWN * 3,
+            "漢堡": DOWN * 2,
         }
         
         circles = {name: Circle(radius=1, color=color).move_to(pos)
@@ -27,12 +27,15 @@ class MarkovChainOptimized(Scene):
         # 添加箭頭和標籤
         arrows_and_probs = [
             #(start,end,   prob,offset ,custom_radius,arrow_color)
-            (rice, noodle, 0.8, 2.5*DOWN, 2.5,BLUE),  
-            (rice, hamburger, 0.2, DOWN * 1.8, 2.0,BLUE),  
-            (noodle, rice, 0.3, 3*UP, 2.5,RED),
-            (noodle, hamburger, 0.7, 0.5*RIGHT+UP*2.5, 2.5,RED),
-            (hamburger, noodle, 0.9, DOWN * 1.8, 2.0,YELLOW), 
-            (hamburger, rice, 0.1, 0.75*LEFT+3*UP, 2.5,YELLOW),
+            (rice, rice, 0.2, 5*UP+LEFT*5, 2.5,BLUE),
+            (rice, noodle, 0.6, 2.5*DOWN, 2.5,BLUE),  
+            (rice, hamburger, 0.2, DOWN * 1.5, 2.0,BLUE),  
+            (noodle, noodle, 0.1, 5*UP+RIGHT*5, 2.5,RED),
+            (noodle, rice, 0.2, 3*UP, 2.5,RED),
+            (noodle, hamburger, 0.7, 0.5*RIGHT+UP*2, 2.5,RED),
+            (hamburger, hamburger, 0.4, DOWN * 2.5+RIGHT*6, 2.0,YELLOW), 
+            (hamburger, noodle, 0.5, DOWN * 1.5, 2.0,YELLOW), 
+            (hamburger, rice, 0.1, 0.75*LEFT+2.5*UP, 2.5,YELLOW),
         ]
 
         arrows = []
@@ -50,16 +53,31 @@ class MarkovChainOptimized(Scene):
 
             if start == end:
                 # 自回圈的箭頭，避免太靠近，並將箭頭放在圓外
-                loop_start_angle = 3 * PI / 3
-                loop_end_angle = PI / 4
-                loop_start = circles[start].point_at_angle(loop_start_angle)
-                loop_end = circles[end].point_at_angle(loop_end_angle)
+                radius =circles[start].radius
                 
+                if start==rice:
+                    loop_start = circles[start].get_bottom()
+                    loop_end = circles[end].get_right()
+                    arrow_offset=radius*(LEFT+UP)
+                    angle=-TAU/2
+                elif start==noodle :
+                   loop_start = circles[start].get_bottom()
+                   loop_end = circles[end].get_left()
+                   arrow_offset=radius*(RIGHT+UP)
+                   angle=TAU/2
+                elif start==hamburger:
+                   loop_start = circles[start].get_top()
+                   loop_end = circles[end].get_left()
+                   arrow_offset=radius*(RIGHT+DOWN)
+                   angle=-TAU/2     
+                   
+                loop_start+=arrow_offset
+                loop_end+=arrow_offset
                 # 調整半徑，使箭頭位於圓外
-                arrow = CurvedArrow(circles[start].get_left(),loop_end,angle=-TAU/4)
-                # arrow = ArcBetweenPoints(
-                #     loop_start, loop_end, radius=-1  # 調整自回圈的半徑
-                # ).add_tip(tip_length=0.2)
+                arrow = CurvedArrow(loop_start,loop_end,angle=angle,color=arrow_color)
+                # arrow = CurvedArrow(loop_start,loop_end,angle=-TAU/2,arc_center=UP*2)
+                
+                
             else:
                 # 普通箭頭，避免箭頭重疊
                 radius = max(custom_radius, np.linalg.norm(end_point - start_point) / 2 + 0.5)
@@ -76,12 +94,12 @@ class MarkovChainOptimized(Scene):
             arrows.append(arrow)
             probs.append(prob_label)
         
-        rice_arrows:list[CurvedArrow]=[arrows[0],arrows[1]]
-        rice_probs=[ probs[0], probs[1]]
-        noodle_arrows=[arrows[2],arrows[3]]
-        noodle_probs=[ probs[2], probs[3]]
-        hamburger_arrows=[arrows[4],arrows[5]]
-        hamburger_probs=[ probs[4], probs[5]]
+        rice_arrows:list[CurvedArrow]=[arrows[0],arrows[1],arrows[2]]
+        rice_probs=[ probs[0], probs[1], probs[2]]
+        noodle_arrows=[arrows[3],arrows[4],arrows[5]]
+        noodle_probs=[ probs[3], probs[4], probs[5]]
+        hamburger_arrows=[arrows[6],arrows[7],arrows[8]]
+        hamburger_probs=[ probs[6], probs[7], probs[8]]
         
         self.play(*[Create(arrow) for arrow in rice_arrows])
         self.play(*[Write(prob) for prob in rice_probs])
@@ -105,9 +123,9 @@ class MarkovChainOptimized(Scene):
         # self.play(*[Create(arrow) for arrow in arrows])
         # 顯示轉移矩陣
         matrix = MathTable(
-            [["0", "0.8", "0.2"],
-             ["0.3", "0", "0.7"],
-             ["0.1", "0.9", "0"]],
+            [["0.2", "0.6", "0.2"],
+             ["0.2", "0.1", "0.7"],
+             ["0.1", "0.5", "0.4"]],
             row_labels=[Text(rice, font_size=20), Text(noodle, font_size=20), Text(hamburger, font_size=20)],
             col_labels=[Text(rice, font_size=20), Text(noodle, font_size=20), Text(hamburger, font_size=20)],
             top_left_entry=Text("轉移矩陣", font_size=20),
