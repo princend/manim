@@ -43,10 +43,10 @@ class ReLUPlot(Scene):
         self.play(FadeOut(axes), FadeOut(graph), FadeOut(title), FadeOut(formula_tex),FadeOut(example1),FadeOut(point1),FadeOut(example2),FadeOut(point2),FadeOut(example3),FadeOut(point3))
 
     def generateExample(self, axes, formula_tex):
-        example1 = Text("ReLU(-2) = 0", font_size=24,color=RED).next_to(formula_tex, DOWN*2, aligned_edge=LEFT)
+        example1 = Text("ReLU(-2) = 0", font_size=24,color=RED).next_to(formula_tex, DOWN*2)
         point1 = Dot(color=RED).move_to(axes.c2p(-2, 0))
-        example2 = Text("ReLU(0) = 0", font_size=24,color=GREEN).next_to(example1, DOWN*2, aligned_edge=LEFT)
+        example2 = Text("ReLU(0) = 0", font_size=24,color=GREEN).next_to(example1, DOWN*2)
         point2 = Dot(color=GREEN).move_to(axes.c2p(0, 0))
-        example3 = Text("ReLU(3) = 3", font_size=24,color=BLUE).next_to(example2, DOWN*2, aligned_edge=LEFT)
+        example3 = Text("ReLU(3) = 3", font_size=24,color=BLUE).next_to(example2, DOWN*2)
         point3 = Dot(color=BLUE).move_to(axes.c2p(3, 3))
         return example1,point1,example2,point2,example3,point3
