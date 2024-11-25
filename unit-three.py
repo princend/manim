@@ -32,3 +32,25 @@ class PracticeAnimation3(Scene):
         self.play(LaggedStart(FadeIn(square), FadeIn(circle), FadeIn(triangle)))
         self.wait(1)
 
+      
+class ComplexScene(Scene):
+    def construct(self):
+        # 第一部分
+        self.play(Create(Square()))
+        self.next_section()  # 标记第一部分结束
+
+        # 第二部分
+        self.play(Create(Circle()))
+        self.next_section()  # 标记第二部分结束
+
+        # 第三部分
+        self.play(Create(Triangle()))
+
+class FadeInOut(Scene):
+    def construct(self):
+        square = Square()
+        circle = Circle()
+        self.play(FadeOut(square), FadeIn(circle))
+        self.wait(1)
+
+
