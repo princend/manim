@@ -1,5 +1,9 @@
 \.venv
 \.venv\*
+\manim-env
+\manim-env\*
+\.manim-env
+\.manim-env\*
 \media
 \media\*
 \__pycache__
