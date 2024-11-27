@@ -3,7 +3,9 @@ from manim import *
 
 class NN(Scene):
     def construct(self):
-      
+        sunbaby = ImageMobject("assets/sunbaby.png").scale(0.5)
+        sunbaby.to_edge(DOWN+RIGHT)
+        self.add(sunbaby)
         neuron_image = ImageMobject("assets/neuron.jpg")
         neuron_image.scale(2)
         neuron_text = Text("神經元 Neuron", font_size=60)
@@ -64,4 +66,5 @@ class NN(Scene):
         self.play(Write(hidden_text))
         self.play(Write(output_text))
         self.wait(1)
+        self.remove(sunbaby)
 
