@@ -26,38 +26,44 @@ class SimpleNN(Scene):
 
         relu_graphs = VGroup()
         for circle in VGroup(*input_layer,*hidden_layer):
-            relu = VGroup(
-                Line(ORIGIN, RIGHT * 0.3, color=BLUE),  # x轴部分
-                Line(RIGHT * 0.3, RIGHT * 0.6 + UP * 0.3, color=BLUE)  # y=x部分
+            activation = VGroup(
+                Line(LEFT * 0.1, RIGHT * 0.3, color=WHITE),  # x轴部分
+                Line(RIGHT * 0.3, RIGHT * 0.6 + UP * 0.3, color=WHITE)  # y=x部分
             ).scale(0.5)
-            relu.move_to(circle.get_center())
-            relu_graphs.add(relu)  
+            activation.move_to(circle.get_center())
+            relu_graphs.add(activation)  
+        
+        ### 其實是tanh
+        sigmoid = ParametricFunction(
+            lambda t: np.array([t, np.tanh(t), 0]),  # 使用tanh函数
+            t_range=np.array([-2, 2]),  # 调整t的范围
+            color=WHITE
+        ).scale(0.1)
+        
+        sigmoid.move_to(output_layer.get_center())
 
         self.play(Create(input_layer),Create(hidden_layer),Create(output_layer),run_time=0.5)
         self.wait(0.1)
-        self.play(Create(relu_graphs),run_time=0.3)
+        self.play(Create(relu_graphs),Create(sigmoid),run_time=0.3)
         self.wait(0.1)
         self.play(Create(connections1),Create(connections2),run_time=0.5)
         self.wait(0.25)
 
-        nn = VGroup(input_layer,hidden_layer,output_layer,connections1,connections2,relu_graphs)
-        self.play(nn.animate.scale(0.6).to_edge(LEFT*2),run_time=1)
+        nn = VGroup(input_layer,hidden_layer,output_layer,connections1,connections2,relu_graphs,sigmoid)
+        self.play(nn.animate.scale(0.8).to_edge(LEFT),run_time=1)
         self.wait(0.5)
         nn_without_relu_graphs = VGroup(input_layer,hidden_layer,output_layer,connections1,connections2)
         
-        for relu in relu_graphs:
-            relu.set_opacity(0) 
-        self.play(nn_without_relu_graphs.animate.rotate(-PI/2),run_time=0.5)
+        for activation in VGroup(*relu_graphs,*sigmoid):
+            activation.set_opacity(0) 
+        self.play(nn_without_relu_graphs.animate.rotate(-PI/2),
+                  run_time=0.5)
         self.wait(0.1)
-        self.play(*[relu.animate.move_to(circle.get_center()) for relu, circle in zip(relu_graphs,VGroup(*input_layer,*hidden_layer))],run_time=0.1)
+        self.play(*[activation.animate.move_to(circle.get_center()) for activation, circle in zip(VGroup(*relu_graphs,sigmoid),VGroup(*input_layer,*hidden_layer,*output_layer))],run_time=0.1)
         self.wait(0.1)
-        
-        
-        # self.play(*[hidden_relu.animate.move_to(hidden_circle.get_center()) for hidden_relu, hidden_circle in zip(hidden_relu_graphs,hidden_layer)],run_time=0.1)
-        # self.wait(0.1)
-        self.play(*[relu.animate.set_opacity(1) for relu in relu_graphs],
+        self.play(*[activation.animate.set_opacity(1) for activation in VGroup(*relu_graphs,sigmoid)],
                   run_time=0.1)
-        self.wait(0.5)
+        self.wait(0.1)
         code = Code(
             file_name="simple_nn.py",
             language="Python",
@@ -69,38 +75,45 @@ class SimpleNN(Scene):
             background="window",
         )
         code.width = 7
+
         code.next_to(nn,RIGHT*3)
         self.play(Write(code))
         self.wait(0.1)
         rectangle = Rectangle(
             width=code.width,
-            height=code.height/9,
+            height=code.height/6,
             color=RED
         )
-        rectangle.move_to(code.get_top()).shift(DOWN*2.1)  # 将长方形移动到 Code 对象的中心
-        # self.play(run_time=0.2)
+        rectangle.move_to(code.get_top()).shift(DOWN*2.3)  # 将长方形移动到 Code 对象的中心
+
         self.play(
             FadeIn(rectangle),
             *[circle.animate.set_color(RED) for circle in input_layer],
+            *[activation.animate.set_color(RED) for activation in VGroup(*relu_graphs[:3])],
             run_time=0.5
         )
         self.wait(1)
         self.play(
-            rectangle.animate.move_to(code.get_top()).shift(DOWN*3.2),
+            rectangle.animate.move_to(code.get_top()).shift(DOWN*4.0),
             *[circle.animate.set_color(YELLOW) for circle in input_layer],
+            *[activation.animate.set_color(YELLOW) for activation in VGroup(*relu_graphs[:3])],
             *[circle.animate.set_color(RED) for circle in hidden_layer],
+            *[activation.animate.set_color(RED) for activation in VGroup(*relu_graphs[3:])],
             run_time=0.5
         )
         self.wait(1)
         self.play(
-            rectangle.animate.move_to(code.get_top()).shift(DOWN*4.4),
+            rectangle.animate.move_to(code.get_top()).shift(DOWN*5.7),
             *[circle.animate.set_color(YELLOW) for circle in hidden_layer],
+            *[activation.animate.set_color(YELLOW) for activation in VGroup(*relu_graphs[3:])],
             *[circle.animate.set_color(RED) for circle in output_layer],
+            sigmoid.animate.set_color(RED),
             run_time=0.5
         )
         self.wait(1)
         self.play(
             *[circle.animate.set_color(YELLOW) for circle in output_layer],
+            sigmoid.animate.set_color(YELLOW),
             FadeOut(rectangle),
             run_time=0.5
         )
