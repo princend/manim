@@ -96,7 +96,7 @@ class SimpleNN(Scene):
         self.play(
             rectangle.animate.move_to(code.get_top()).shift(DOWN*4.0),
             *[circle.animate.set_color(YELLOW) for circle in input_layer],
-            *[activation.animate.set_color(YELLOW) for activation in VGroup(*relu_graphs[:3])],
+            *[activation.animate.set_color(WHITE) for activation in VGroup(*relu_graphs[:3])],
             *[circle.animate.set_color(RED) for circle in hidden_layer],
             *[activation.animate.set_color(RED) for activation in VGroup(*relu_graphs[3:])],
             run_time=0.5
@@ -105,7 +105,7 @@ class SimpleNN(Scene):
         self.play(
             rectangle.animate.move_to(code.get_top()).shift(DOWN*5.7),
             *[circle.animate.set_color(YELLOW) for circle in hidden_layer],
-            *[activation.animate.set_color(YELLOW) for activation in VGroup(*relu_graphs[3:])],
+            *[activation.animate.set_color(WHITE) for activation in VGroup(*relu_graphs[3:])],
             *[circle.animate.set_color(RED) for circle in output_layer],
             sigmoid.animate.set_color(RED),
             run_time=0.5
@@ -113,7 +113,7 @@ class SimpleNN(Scene):
         self.wait(1)
         self.play(
             *[circle.animate.set_color(YELLOW) for circle in output_layer],
-            sigmoid.animate.set_color(YELLOW),
+            sigmoid.animate.set_color(WHITE),
             FadeOut(rectangle),
             run_time=0.5
         )
