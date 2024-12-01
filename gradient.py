@@ -46,7 +46,7 @@ class Plot3DSurface(ThreeDScene):
 
         # grad_text = Text(f"梯度:{2 * current_point}", font_size=16)
         grad_text = Text(f"梯度:({current_point[0]:.2f}, {current_point[1]:.2f})", font_size=16)
-        grad_text.add_updater(lambda m: m.to_corner(UR))
+        grad_text.add_updater(lambda m: m.to_corner(UR).shift(np.array([-0.75,0,0])))
         self.add_fixed_in_frame_mobjects(grad_text)
         self.add(grad_text)
         for _ in range(50):  # 迭代次數
