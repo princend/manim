@@ -5,6 +5,9 @@ import numpy as np
 class Plot3DSurface(ThreeDScene):
     def construct(self):
         # 創建座標軸
+        self.draw_gradient()
+
+    def draw_gradient(self,learning_rate=1):
         axes = ThreeDAxes(
             x_range=[-6, 6, 1],
             y_range=[-6, 6, 1],
@@ -34,8 +37,7 @@ class Plot3DSurface(ThreeDScene):
         # 添加座標軸和曲面
         self.add( surface)
 
-                # 初始化梯度下降
-        learning_rate = 0.05
+        # 初始化梯度下降
         current_point = np.array([5.0, 5.0])  # 初始點
 
         dot = Dot3D(axes.c2p(current_point[0], current_point[1], current_point[0]**2 + current_point[1]**2), color=RED)
@@ -45,7 +47,7 @@ class Plot3DSurface(ThreeDScene):
         self.add(trace)
 
         # grad_text = Text(f"梯度:{2 * current_point}", font_size=16)
-        grad_text = Text(f"梯度:({current_point[0]:.2f}, {current_point[1]:.2f})", font_size=16)
+        grad_text = Text(f"梯度:({current_point[0]:+.2f}, {current_point[1]:+.2f})", font_size=16)
         grad_text.add_updater(lambda m: m.to_corner(UR).shift(np.array([-0.75,0,0])))
         self.add_fixed_in_frame_mobjects(grad_text)
         self.add(grad_text)
@@ -56,23 +58,11 @@ class Plot3DSurface(ThreeDScene):
             self.play(dot.animate.move_to(next_dot_position), run_time=0.1)
             
         #     # 更新梯度顯示文本
-            grad_text.become(Text(f"梯度:({current_point[0]:.2f}, {current_point[1]:.2f})", font_size=16))
+            grad_text.become(Text(f"梯度:({current_point[0]:+.2f}, { current_point[1]:+.2f})", font_size=16))
             
             current_point = next_point
+        self.wait(3)
 
-        self.wait(1)
-        self.begin_ambient_camera_rotation(rate=2,about='theta')
-        self.wait(PI)
-        self.stop_ambient_camera_rotation(about='theta')
-        self.wait(1)
 
-        self.begin_ambient_camera_rotation(rate=-1,about='phi')
-        self.wait(1)
-        self.stop_ambient_camera_rotation(about='phi')
-        self.wait(1)
-        self.begin_ambient_camera_rotation(rate=1,about='phi')
-        self.wait(1)    
-        self.stop_ambient_camera_rotation(about='phi')
-        self.wait(2)
         
         
